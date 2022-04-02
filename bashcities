@@ -1,0 +1,204 @@
+#!/bin/bash
+
+# Copyright: Ren Tatsumoto
+# License: GNU GPL, version 3 or later; http://www.gnu.org/licenses/gpl.html
+
+set -euo pipefail
+
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+
+readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
+declare site_directory api_key
+
+request() {
+	curl -s -H "Authorization: Bearer ${api_key:?}" "$@"
+}
+
+list() {
+	request "https://neocities.org/api/list"
+}
+
+info() {
+	request "https://neocities.org/api/info"
+}
+
+sitename() {
+	info | grep -Po '(?<="sitename":\s").*(?=")'
+}
+
+list_remote_files_and_sums() {
+	# For each remote file, print its relative path and sha1 sum
+	list | python3 -c '
+import json
+import sys
+content = json.loads(sys.stdin.read())
+for file_info in content["files"]:
+    if file_info["is_directory"] is False:
+        print(file_info["path"], file_info["sha1_hash"], sep="\t")
+'
+}
+
+download_backup() {
+	# Download the entire site to the current directory.
+	local -r site_name=$(sitename)
+	local -r backup_folder="${site_name:?}-$(date -u)"
+	local full_url rel_path
+	mkdir -p "$backup_folder" && cd -- "$backup_folder" || exit 1
+
+	while IFS= read -r rel_path; do
+		full_url="https://$site_name.neocities.org/$rel_path"
+		mkdir -p -- "$(dirname -- "$rel_path")"
+		if curl -s "$full_url" -o "$rel_path"; then
+			echo -e "${GREEN}[OK]${NC} $rel_path"
+		else
+			echo -e "${RED}[FAIL]${NC} $rel_path"
+		fi
+	done <<<"$(list_remote_files_and_sums | cut -f1)"
+}
+
+list_files_to_be_updated() {
+	local -A local_sums remote_sums
+	local rel_path remote_sum
+	local top_level
+	top_level=$(git rev-parse --show-toplevel)
+
+	# Prepare
+	cd -- "${top_level:?}" || exit 1
+
+	# Remember local checksums
+	while IFS= read -r rel_path; do
+		local_sums[$rel_path]=$(sha1sum -- "$rel_path" | cut -f1 -d' ')
+	done <<<"$(git ls-files)"
+
+	# Remember remote checksums
+	while IFS=$'\t' read -r rel_path remote_sum; do
+		remote_sums[$rel_path]=$remote_sum
+	done <<<"$(list_remote_files_and_sums)"
+
+	for rel_path in "${!local_sums[@]}"; do
+		if [[ "${local_sums[$rel_path]}" != "${remote_sums[$rel_path]-}" ]]; then
+			echo "$rel_path"
+		fi
+	done | grep -Fv '.gitignore' | sort -u
+}
+
+upload() {
+	local -r file=$1
+
+	parse_result() {
+		local -r msg=$(cat -)
+		if echo "$msg" | grep -q -P '"result":\s*"success"'; then
+			echo -e "${GREEN}[OK]${NC} $file"
+		else
+			echo -e "${RED}[FAIL]${NC} $file"
+			if [[ ${verbose-} == true ]]; then
+				echo "$msg"
+			fi
+		fi
+	}
+
+	if [[ -f $file ]]; then
+		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_result
+	else
+		echo "'$file' is not a file or doesn't exist."
+	fi
+}
+
+update_site() {
+	local rel_path
+	while IFS= read -r rel_path; do
+		upload "$rel_path"
+	done <<<"$(list_files_to_be_updated)"
+}
+
+read_config() {
+	# shellcheck source=/dev/null
+	if [[ -f ${config_filepath:?} ]]; then
+		source "$config_filepath"
+	else
+		echo "Can't find config file."
+		exit 1
+	fi
+	unset config_filepath
+	readonly site_directory api_key
+	cd -- "${site_directory:?}" || exit 1
+}
+
+help() {
+	cat <<-EOF
+		Usage: $(basename -- "$0") -p NAME [init NAME|upload FILE|push|status|list|download]
+	EOF
+}
+
+init() {
+	local -r new_config=$config_dir/$user
+	if [[ -f $new_config ]]; then
+		echo "This profile already exists."
+	else
+		cat <<-EOF >"$new_config"
+			site_directory=~/Documents/my_site
+			api_key=da77c3530c30593663bf7b797323e48c
+		EOF
+	fi
+}
+
+main() {
+	if (($# == 0)); then
+		help
+		exit
+	fi
+	while :; do
+		case ${1-} in
+		-h | --help)
+			help
+			exit
+			;;
+		-V | --verbose)
+			readonly verbose=true
+			;;
+		-p | --profile)
+			shift
+			local config_filepath=$config_dir/$1
+			read_config
+			;;
+		init)
+			local -r user=${2:?Please provide a profile name.}
+			init
+			exit
+			;;
+		push)
+			git stash
+			update_site
+			git stash pop
+			exit
+			;;
+		status)
+			git stash
+			echo "To be updated:"
+			list_files_to_be_updated
+			git stash pop
+			exit
+			;;
+		list)
+			list_remote_files_and_sums | cut -f1
+			exit
+			;;
+		download)
+			download_backup
+			exit
+			;;
+		upload)
+			upload "$2"
+			exit
+			;;
+		*)
+			break
+			;;
+		esac
+		shift
+	done
+}
+
+main "$@"
