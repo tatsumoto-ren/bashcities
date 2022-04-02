@@ -58,19 +58,23 @@ download_backup() {
 	done <<<"$(list_remote_files_and_sums | cut -f1)"
 }
 
+list_local_files() {
+	if [[ ${no_git-} == true ]]; then
+		ls -A -1
+	else
+		cd -- "$(git rev-parse --show-toplevel)" || exit 1
+		git ls-files
+	fi
+}
+
 list_files_to_be_updated() {
 	local -A local_sums remote_sums
 	local rel_path remote_sum
-	local top_level
-	top_level=$(git rev-parse --show-toplevel)
-
-	# Prepare
-	cd -- "${top_level:?}" || exit 1
 
 	# Remember local checksums
 	while IFS= read -r rel_path; do
 		local_sums[$rel_path]=$(sha1sum -- "$rel_path" | cut -f1 -d' ')
-	done <<<"$(git ls-files)"
+	done <<<"$(list_local_files)"
 
 	# Remember remote checksums
 	while IFS=$'\t' read -r rel_path remote_sum; do
@@ -136,6 +140,7 @@ help() {
 		-h, --help|display this help text and exit
 		-V, --verbose|verbose mode
 		-p, --profile|specify the desired profile name
+		-n, --no-git|don't use git to list files
 		init NAME|create a new profile with NAME
 		push|upload all files that differ from the remote
 		status|lists all files that differ from the remote
@@ -157,6 +162,16 @@ init() {
 	fi
 }
 
+with_stash() {
+	if [[ ${no_git-} == true ]]; then
+		"$@"
+	else
+		git stash
+		"$@"
+		git stash pop
+	fi
+}
+
 main() {
 	if (($# == 0)); then
 		help
@@ -171,6 +186,9 @@ main() {
 		-V | --verbose)
 			readonly verbose=true
 			;;
+		-n | --no-git)
+			readonly no_git=true
+			;;
 		-p | --profile)
 			shift
 			local config_filepath=$config_dir/$1
@@ -182,16 +200,12 @@ main() {
 			exit
 			;;
 		push)
-			git stash
-			update_site
-			git stash pop
+			with_stash update_site
 			exit
 			;;
 		status)
-			git stash
 			echo "To be updated:"
-			list_files_to_be_updated
-			git stash pop
+			with_stash list_files_to_be_updated
 			exit
 			;;
 		list)

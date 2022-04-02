@@ -45,6 +45,9 @@ alias neo='bashcities --profile my_site'
 
 ## Usage
 
+Your site has to be managed by `git`.
+If it's not, initialize a git repository or use the `--no-git` switch.
+
 ### Update your site
 
 ```
