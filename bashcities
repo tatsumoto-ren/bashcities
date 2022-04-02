@@ -127,8 +127,21 @@ read_config() {
 }
 
 help() {
-	cat <<-EOF
-		Usage: $(basename -- "$0") -p NAME [init NAME|upload FILE|push|status|list|download]
+	echo "Usage: $(basename -- "$(readlink -f "$0")") [OPTION] [FILE]"
+	echo
+	echo "A Neocities client written in Bash."
+	echo
+	column -t -s'|' <<-EOF
+		Options:
+		-h, --help|display this help text and exit
+		-V, --verbose|verbose mode
+		-p, --profile|specify the desired profile name
+		init NAME|create a new profile with NAME
+		push|upload all files that differ from the remote
+		status|lists all files that differ from the remote
+		list|print all remote files
+		download|download a backup of the site
+		upload FILE|upload a file
 	EOF
 }
 
