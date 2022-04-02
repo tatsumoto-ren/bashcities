@@ -81,7 +81,7 @@ list_files_to_be_updated() {
 		if [[ "${local_sums[$rel_path]}" != "${remote_sums[$rel_path]-}" ]]; then
 			echo "$rel_path"
 		fi
-	done | grep -Fv '.gitignore' | sort -u
+	done | sort -u | grep -Fv '.gitignore' || true
 }
 
 upload() {
