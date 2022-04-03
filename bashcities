@@ -131,7 +131,7 @@ read_config() {
 }
 
 help() {
-	echo "Usage: $(basename -- "$(readlink -f "$0")") [OPTION] [FILE]"
+	echo "Usage: $(basename -- "$(readlink -f -- "$0")") [OPTION] [FILE]"
 	echo
 	echo "A Neocities client written in Bash."
 	echo
