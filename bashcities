@@ -159,6 +159,7 @@ init() {
 			site_directory=~/Documents/my_site
 			api_key=da77c3530c30593663bf7b797323e48c
 		EOF
+		echo "Created a new config file $new_config"
 	fi
 }
 
