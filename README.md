@@ -1,5 +1,6 @@
 # bashcities
 
+[![AUR version](https://img.shields.io/aur/version/bashcities)](https://aur.archlinux.org/packages/bashcities)
 [![Chat](https://img.shields.io/badge/chat-join-green)](https://tatsumoto-ren.github.io/blog/join-our-community.html)
 ![GitHub](https://img.shields.io/github/license/tatsumoto-ren/bashcities)
 
