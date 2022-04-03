@@ -6,7 +6,7 @@
 > A neocities client that actually works.
 
 I use [neocities](https://neocities.org/) to host some sites.
-One day the official cli client stopped working completely,
+One day the official CLI client stopped working completely,
 so I wrote this one in bash.
 
 ## Setup
@@ -47,6 +47,10 @@ alias neo='bashcities --profile my_site'
 
 Your site has to be managed by `git`.
 If it's not, initialize a git repository or use the `--no-git` switch.
+
+If you manage your site with `git`,
+`bashcities` will not upload files that you haven't added to the index.
+This behavior resembles that of the official CLI client.
 
 ### Update your site
 
