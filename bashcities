@@ -192,7 +192,7 @@ main() {
 			;;
 		-p | --profile)
 			shift
-			local config_filepath=$config_dir/$1
+			local config_filepath=$config_dir/${1:?Profile name is not set.}
 			read_config
 			;;
 		init)
