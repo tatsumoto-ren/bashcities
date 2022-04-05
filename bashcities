@@ -98,19 +98,6 @@ list_pending_file_changes() {
 
 upload() {
 	local -r file=$1
-
-	parse_result() {
-		local -r msg=$(cat -)
-		if echo "$msg" | grep -q -P '"result":\s*"success"'; then
-			echo -e "${GREEN}[OK]${NC} $file"
-		else
-			echo -e "${RED}[FAIL]${NC} $file"
-			if [[ ${verbose-} == true ]]; then
-				echo "$msg"
-			fi
-		fi
-	}
-
 	if [[ -f $file ]]; then
 		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_result
 	else
@@ -120,6 +107,18 @@ upload() {
 
 delete() {
 	request -d "filenames[]=${1:?}" "https://neocities.org/api/delete"
+}
+
+parse_request_result() {
+	local -r msg=$(cat -)
+	if echo "$msg" | grep -q -P '"result":\s*"success"'; then
+		echo -e "${GREEN}[OK]${NC} ${file:?}"
+	else
+		echo -e "${RED}[FAIL]${NC} ${file:?}"
+		if [[ ${verbose-} == true ]]; then
+			echo "$msg"
+		fi
+	fi
 }
 
 update_site() {
