@@ -31,8 +31,7 @@ sitename() {
 list_remote_files_and_sums() {
 	# For each remote file, print its relative path and sha1 sum
 	list | python3 -c '
-import json
-import sys
+import sys, json
 content = json.loads(sys.stdin.read())
 for file_info in content["files"]:
     if file_info["is_directory"] is False:
