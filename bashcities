@@ -100,7 +100,7 @@ list_pending_file_changes() {
 upload() {
 	local -r file=$1
 	if [[ -f $file ]]; then
-		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_result
+		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_request_result
 	else
 		echo "'$file' is not a file or doesn't exist."
 	fi
@@ -108,7 +108,7 @@ upload() {
 
 delete() {
 	local -r file=$1
-	request -d "filenames[]=$file" "https://neocities.org/api/delete" | parse_result
+	request -d "filenames[]=$file" "https://neocities.org/api/delete" | parse_request_result
 }
 
 parse_request_result() {
