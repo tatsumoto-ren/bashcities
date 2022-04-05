@@ -60,7 +60,9 @@ download_backup() {
 
 list_local_files() {
 	if [[ ${no_git-} == true ]]; then
-		ls -A -1
+		find . -type f -printf '%p\n' |
+			grep -Pv '/\.git(ignore)?($|/)' |
+			sed -e 's|^\./||'
 	else
 		cd -- "$(git rev-parse --show-toplevel)" || exit 1
 		git ls-files
