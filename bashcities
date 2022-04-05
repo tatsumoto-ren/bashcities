@@ -238,8 +238,12 @@ main() {
 			delete "$2"
 			exit
 			;;
-		*)
+		"")
 			break
+			;;
+		*)
+			echo "Unknown command: '$1'"
+			exit 1
 			;;
 		esac
 		shift
