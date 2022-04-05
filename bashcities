@@ -106,7 +106,8 @@ upload() {
 }
 
 delete() {
-	request -d "filenames[]=${1:?}" "https://neocities.org/api/delete"
+	local -r file=$1
+	request -d "filenames[]=$file" "https://neocities.org/api/delete" | parse_result
 }
 
 parse_request_result() {
