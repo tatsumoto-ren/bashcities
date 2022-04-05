@@ -110,6 +110,10 @@ upload() {
 	fi
 }
 
+delete() {
+	request -d "filenames[]=${1:?}" "https://neocities.org/api/delete"
+}
+
 update_site() {
 	local rel_path
 	while IFS= read -r rel_path; do
@@ -219,6 +223,10 @@ main() {
 			;;
 		upload)
 			upload "$2"
+			exit
+			;;
+		delete)
+			delete "$2"
 			exit
 			;;
 		*)
