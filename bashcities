@@ -67,7 +67,7 @@ list_local_files() {
 	fi
 }
 
-list_files_to_be_updated() {
+list_pending_file_changes() {
 	local -A local_sums remote_sums
 	local rel_path remote_sum
 
@@ -81,11 +81,19 @@ list_files_to_be_updated() {
 		remote_sums[$rel_path]=$remote_sum
 	done <<<"$(list_remote_files_and_sums)"
 
+	# List files to be updated
 	for rel_path in "${!local_sums[@]}"; do
 		if [[ "${local_sums[$rel_path]}" != "${remote_sums[$rel_path]-}" ]]; then
-			echo "$rel_path"
+			echo -e "upload\t$rel_path"
 		fi
 	done | sort -u | grep -Fv '.gitignore' || true
+
+	# List files to be deleted
+	for rel_path in "${!remote_sums[@]}"; do
+		if [[ -z "${local_sums[$rel_path]-}" ]]; then
+			echo -e "delete\t$rel_path"
+		fi
+	done | sort -u
 }
 
 upload() {
@@ -116,9 +124,9 @@ delete() {
 
 update_site() {
 	local rel_path
-	while IFS= read -r rel_path; do
-		upload "$rel_path"
-	done <<<"$(list_files_to_be_updated)"
+	while IFS=$'\t' read -r action rel_path; do
+		"$action" "$rel_path"
+	done <<<"$(list_pending_file_changes)"
 }
 
 read_config() {
@@ -209,8 +217,8 @@ main() {
 			exit
 			;;
 		status)
-			echo "To be updated:"
-			with_stash list_files_to_be_updated
+			echo "Pending changes on the remote:"
+			with_stash list_pending_file_changes
 			exit
 			;;
 		list)
