@@ -61,6 +61,7 @@ $ neo push
 
 Uploads all files that differ from the remote.
 It skips files that haven't been changed.
+Files that aren't present locally are deleted from the remote.
 
 ### See status
 
@@ -86,6 +87,14 @@ $ neo upload file.html
 ```
 
 Uploads `file.html` to the remote.
+
+### Delete a file
+
+```
+$ neo delete file.html
+```
+
+Deletes `file.html` from the remote.
 
 ### Backup your site
 
