@@ -160,6 +160,7 @@ help() {
 		list|print all remote files
 		download|download a backup of the site
 		upload FILE|upload a file
+		delete FILE|delete a file from the remote
 	EOF
 }
 
