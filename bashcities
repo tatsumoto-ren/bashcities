@@ -171,9 +171,9 @@ with_stash() {
 	if [[ ${no_git-} == true ]]; then
 		"$@"
 	else
-		git stash
+		git stash >/dev/null
 		"$@"
-		git stash pop
+		git stash pop >/dev/null
 	fi
 }
 
