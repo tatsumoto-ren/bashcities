@@ -12,20 +12,23 @@ so I wrote this one in bash.
 
 ## Setup
 
-0) Install `bashcities` somewhere. Example:
-```
-$ git clone 'https://github.com/tatsumoto-ren/bashcities.git' ~/.local/share/neocities
-$ ln -s ~/.local/share/neocities/bashcities ~/.local/bin/bashcities
-```
+1) Install `bashcities`.
+If your distribution is based on Arch Linux, you can install the AUR package.
+
+    Example of a manual installation:
+    ```
+    $ git clone 'https://github.com/tatsumoto-ren/bashcities.git' ~/.local/share/neocities
+    $ ln -s ~/.local/share/neocities/bashcities ~/.local/bin/bashcities
+    ```
 1) Grab your API Key.
 Go to https://neocities.org/settings/,
 click "Manage Site Settings" > "API Key".
 Usually it looks like this: `da77c3530c30593663bf7b797323e48c`.
-2) Initialize a new profile.
+1) Initialize a new profile.
 Run `bashcities init new_profile`.
 `new_profile` can be any string (without spaces).
 It doesn't have to be equal to your site name.
-3) Edit your profile settings.
+1) Edit your profile settings.
 Run `vim ~/.config/neocities/new_profile`
 Specify the directory of your site and the API key.
 
