@@ -28,9 +28,8 @@ Usually it looks like this: `da77c3530c30593663bf7b797323e48c`.
 Run `bashcities init new_profile`.
 `new_profile` can be any string (without spaces).
 It doesn't have to be equal to your site name.
-1) Edit your profile settings.
-Run `vim ~/.config/neocities/new_profile`
-Specify the directory of your site and the API key.
+1) The profile file will be saved in `~/.config/neocities/`.
+Edit it and specify the directory of your site and the API key.
 
 ## Running
 
