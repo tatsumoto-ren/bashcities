@@ -60,12 +60,11 @@ download_backup() {
 list_local_files() {
 	if [[ ${no_git-} == true ]]; then
 		find . -type f -printf '%p\n' |
-			grep -Pv '/\.git(ignore)?($|/)' |
 			sed -e 's|^\./||'
 	else
 		cd -- "$(git rev-parse --show-toplevel)" || exit 1
 		git ls-files
-	fi
+	fi | grep -Pv '/?\.git(ignore)?($|/)' || true
 }
 
 list_pending_file_changes() {
@@ -87,7 +86,7 @@ list_pending_file_changes() {
 		if [[ "${local_sums[$rel_path]}" != "${remote_sums[$rel_path]-}" ]]; then
 			echo -e "upload\t$rel_path"
 		fi
-	done | sort -u | grep -Fv '.gitignore' || true
+	done | sort -u
 
 	# List files to be deleted
 	for rel_path in "${!remote_sums[@]}"; do
