@@ -165,6 +165,7 @@ help() {
 
 init() {
 	local -r new_config=$config_dir/$user
+	mkdir -p -- "$config_dir"
 	if [[ -f $new_config ]]; then
 		echo "This profile already exists."
 	else
