@@ -46,6 +46,8 @@ You may want to add this command as an alias to your `~/.bashrc` (or `~/.zshrc`,
 alias neo='bashcities --profile my_site'
 ```
 
+To print a help page, run `bashcities --help`.
+
 ## Usage
 
 Your site has to be managed by `git`.
