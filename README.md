@@ -92,10 +92,16 @@ $ neo upload file.html
 
 Uploads `file.html` to the remote.
 
+```
+$ neo upload 'articles/about.html'
+```
+
+Directory structure is preserved.
+
 ### Delete a file
 
 ```
-$ neo delete file.html
+$ neo delete 'articles/about.html'
 ```
 
 Deletes `file.html` from the remote.
