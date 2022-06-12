@@ -147,8 +147,8 @@ help() {
 	echo
 	echo "A Neocities client written in Bash."
 	echo
+	echo "Options:"
 	column -t -s'|' <<-EOF
-		Options:
 		-h, --help|display this help text and exit
 		-V, --verbose|verbose mode
 		-p, --profile|specify the desired profile name
