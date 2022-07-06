@@ -66,6 +66,7 @@ $ neo push
 Uploads all files that differ from the remote.
 It skips files that haven't been changed.
 Files that aren't present locally are deleted from the remote.
+Changes that haven't been commited aren't pushed.
 
 ### See status
 
