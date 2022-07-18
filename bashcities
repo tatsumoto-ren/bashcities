@@ -10,7 +10,7 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 
 readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
-declare site_directory api_key
+declare site_directory api_key ignore_regex
 
 request() {
 	curl -s -H "Authorization: Bearer ${api_key:?}" "$@"
@@ -73,6 +73,9 @@ list_pending_file_changes() {
 
 	# Remember local checksums
 	while IFS= read -r rel_path; do
+		if [[ -n ${ignore_regex-} ]] && [[ $rel_path =~ $ignore_regex ]]; then
+			continue
+		fi
 		local_sums[$rel_path]=$(sha1sum -- "$rel_path" | cut -f1 -d' ')
 	done <<<"$(list_local_files)"
 
@@ -138,7 +141,7 @@ read_config() {
 		echo "Can't find config file."
 		exit 1
 	fi
-	readonly site_directory api_key
+	readonly site_directory api_key ignore_regex
 	if ! cd -- "${site_directory:?}"; then
 		echo "Couldn't cd to '$site_directory'."
 		exit 1
@@ -172,9 +175,10 @@ init() {
 	if [[ -f $new_config ]]; then
 		echo "This profile already exists."
 	else
-		cat <<-EOF >"$new_config"
+		cat <<-'EOF' >"$new_config"
 			site_directory=~/Documents/my_site
 			api_key=da77c3530c30593663bf7b797323e48c
+			ignore_regex='\.md$|\.gitignore$|(^|/)drafts/'
 		EOF
 		echo "Created a new config file: '$new_config'."
 		echo "Edit it to specify the parameters of your site."
