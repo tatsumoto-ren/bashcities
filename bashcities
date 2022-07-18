@@ -130,16 +130,19 @@ update_site() {
 }
 
 read_config() {
+	local -r config_filepath=${1:?}
 	# shellcheck source=/dev/null
-	if [[ -f ${config_filepath:?} ]]; then
+	if [[ -f ${config_filepath} ]]; then
 		source "$config_filepath"
 	else
 		echo "Can't find config file."
 		exit 1
 	fi
-	unset config_filepath
 	readonly site_directory api_key
-	cd -- "${site_directory:?}" || exit 1
+	if ! cd -- "${site_directory:?}"; then
+		echo "Couldn't cd to '$site_directory'."
+		exit 1
+	fi
 }
 
 help() {
@@ -173,7 +176,8 @@ init() {
 			site_directory=~/Documents/my_site
 			api_key=da77c3530c30593663bf7b797323e48c
 		EOF
-		echo "Created a new config file $new_config"
+		echo "Created a new config file: '$new_config'."
+		echo "Edit it to specify the parameters of your site."
 	fi
 }
 
@@ -206,8 +210,7 @@ main() {
 			;;
 		-p | --profile)
 			shift
-			local config_filepath=$config_dir/${1:?Profile name is not set.}
-			read_config
+			read_config "$config_dir/${1:?Profile name is not set.}"
 			;;
 		init)
 			local -r user=${2:?Please provide a profile name.}
