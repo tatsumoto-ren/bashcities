@@ -30,6 +30,8 @@ Run `bashcities init new_profile`.
 It doesn't have to be equal to your site name.
 1) The profile file will be saved in `~/.config/neocities/`.
 Edit it and specify the directory of your site and the API key.
+`ignore_regex` is a regular expression that defines files to be ignored.
+They won't be uploaded to the remote.
 
 ## Running
 
@@ -66,7 +68,7 @@ $ neo push
 Uploads all files that differ from the remote.
 It skips files that haven't been changed.
 Files that aren't present locally are deleted from the remote.
-Changes that haven't been commited aren't pushed.
+Changes that haven't been committed aren't pushed.
 
 ### See status
 
