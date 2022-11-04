@@ -102,7 +102,7 @@ list_pending_file_changes() {
 upload() {
 	local -r file=$1
 	if [[ -f $file ]]; then
-		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_request_result
+		request -F "$file=@$file" "https://neocities.org/api/upload" | parse_request_result "upload"
 	else
 		echo "'$file' is not a file or doesn't exist."
 	fi
@@ -110,13 +110,13 @@ upload() {
 
 delete() {
 	local -r file=$1
-	request -d "filenames[]=$file" "https://neocities.org/api/delete" | parse_request_result
+	request -d "filenames[]=$file" "https://neocities.org/api/delete" | parse_request_result "delete"
 }
 
 parse_request_result() {
-	local -r msg=$(cat -)
+	local -r msg=$(cat -) explanation=$1
 	if echo "$msg" | grep -q -P '"result":\s*"success"'; then
-		echo -e "${GREEN}[OK]${NC} ${file:?}"
+		echo -e "${GREEN}[${explanation^^}]${NC} ${file:?}"
 	else
 		echo -e "${RED}[FAIL]${NC} ${file:?}"
 		if [[ ${verbose-} == true ]]; then
