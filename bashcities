@@ -200,8 +200,8 @@ main() {
 		help
 		exit
 	fi
-	while :; do
-		case ${1-} in
+	while (($# > 0)); do
+		case $1 in
 		-h | --help)
 			help
 			exit
