@@ -165,6 +165,7 @@ help() {
 		push|upload all files that differ from the remote
 		status|lists all files that differ from the remote
 		list|print all remote files
+		list --local|print all local files
 		download|download a backup of the site
 		upload FILE|upload a file
 		delete FILE|delete a file from the remote
@@ -233,7 +234,11 @@ main() {
 			exit
 			;;
 		list)
-			list_remote_files_and_sums | cut -f1
+			if [[ ${2-} == '--local' ]]; then
+				list_local_files
+			else
+				list_remote_files_and_sums | cut -f1
+			fi
 			exit
 			;;
 		download)
