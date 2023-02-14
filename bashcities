@@ -10,7 +10,7 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 
 readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
-declare site_directory api_key ignore_regex
+declare site_directory api_key ignore_regex n_concurrent_tasks=16
 
 request() {
 	curl -s -H "Authorization: Bearer ${api_key:?}" "$@"
@@ -129,13 +129,21 @@ parse_request_result() {
 	fi
 }
 
+block_if_queue_is_full() {
+	while [[ $(jobs -lr | wc -l) -gt $n_concurrent_tasks ]]; do
+		wait -n
+	done
+}
+
 update_site() {
 	local action rel_path
 	while IFS=$'\t' read -r action rel_path; do
 		if [[ -n $action ]] && [[ -n $rel_path ]]; then
-			"$action" "$rel_path"
+			"$action" "$rel_path" &
 		fi
+		block_if_queue_is_full
 	done <<<"$(list_pending_file_changes)"
+	wait
 }
 
 read_config() {
@@ -147,7 +155,7 @@ read_config() {
 		echo "Can't find config file."
 		exit 1
 	fi
-	readonly site_directory api_key ignore_regex
+	readonly site_directory api_key ignore_regex n_concurrent_tasks
 	if ! cd -- "${site_directory:?}"; then
 		echo "Couldn't cd to '$site_directory'."
 		exit 1
@@ -186,6 +194,7 @@ init() {
 			site_directory=~/Documents/my_site
 			api_key=da77c3530c30593663bf7b797323e48c
 			ignore_regex='\.md$|\.gitignore$|(^|/)drafts/'
+			n_concurrent_tasks=16
 		EOF
 		echo "Created a new config file: '$new_config'."
 		echo "Edit it to specify the parameters of your site."
