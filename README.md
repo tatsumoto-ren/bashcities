@@ -13,25 +13,26 @@ so I wrote this one in bash.
 ## Setup
 
 1) Install `bashcities`.
-If your distribution is based on Arch Linux, you can install the AUR package.
+   If your distribution is based on Arch Linux, you can install the AUR package.
 
-    Example of a manual installation:
-    ```
-    $ git clone 'https://github.com/tatsumoto-ren/bashcities.git' ~/.local/share/neocities
-    $ ln -s ~/.local/share/neocities/bashcities ~/.local/bin/bashcities
-    ```
+   Example of a manual installation:
+
+   ```
+   $ git clone 'https://github.com/tatsumoto-ren/bashcities.git' ~/.local/share/neocities
+   $ ln -s ~/.local/share/neocities/bashcities ~/.local/bin/bashcities
+   ```
 1) Grab your API Key.
-Go to https://neocities.org/settings/,
-click "Manage Site Settings" > "API Key".
-Usually it looks like this: `da77c3530c30593663bf7b797323e48c`.
+   Go to the [Neocities settings](https://neocities.org/settings/),
+   click "Manage Site Settings" > "API Key".
+   Usually it looks like this: `da77c3530c30593663bf7b797323e48c`.
 1) Initialize a new profile.
-Run `bashcities init new_profile`.
-`new_profile` can be any string (without spaces).
-It doesn't have to be equal to your site name.
+   Run `bashcities init new_profile`.
+   `new_profile` can be any string (without spaces).
+   It doesn't have to be equal to your site name.
 1) The profile file will be saved in `~/.config/neocities/`.
-Edit it and specify the directory of your site and the API key.
-`ignore_regex` is a regular expression that defines files to be ignored.
-They won't be uploaded to the remote.
+   Edit it and specify the directory of your site and the API key.
+   `ignore_regex` is a regular expression that defines files to be ignored.
+   They won't be uploaded to the remote.
 
 ## Running
 
