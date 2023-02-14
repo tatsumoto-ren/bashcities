@@ -57,6 +57,10 @@ download_backup() {
 	done <<<"$(list_remote_files_and_sums | cut -f1)"
 }
 
+filter_out_git_files() {
+	grep -Pv '(/|^)\.git(ignore)?($|/)'
+}
+
 list_local_files() {
 	if [[ ${no_git-} == true ]]; then
 		find . -type f -printf '%p\n' |
@@ -64,7 +68,7 @@ list_local_files() {
 	else
 		cd -- "$(git rev-parse --show-toplevel)" || exit 1
 		git ls-files
-	fi | grep -Pv '/?\.git(ignore)?($|/)' || true
+	fi | filter_out_git_files || true
 }
 
 list_pending_file_changes() {
