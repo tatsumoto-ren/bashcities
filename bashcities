@@ -10,10 +10,10 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 
 readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
-declare site_directory api_key ignore_regex n_concurrent_tasks=16
+declare site_directory="" api_key="" ignore_regex="" n_concurrent_tasks=16
 
 request() {
-	curl -s -H "Authorization: Bearer ${api_key:?}" "$@"
+	curl -s -H "Authorization: Bearer $api_key" "$@"
 }
 
 list() {
@@ -77,7 +77,7 @@ list_pending_file_changes() {
 
 	# Remember local checksums
 	while IFS= read -r rel_path; do
-		if [[ -n ${ignore_regex-} ]] && [[ $rel_path =~ $ignore_regex ]]; then
+		if [[ -n $ignore_regex ]] && [[ $rel_path =~ $ignore_regex ]]; then
 			continue
 		fi
 		local_sums[$rel_path]=$(sha1sum -- "$rel_path" | cut -f1 -d' ')
@@ -156,8 +156,12 @@ read_config() {
 		exit 1
 	fi
 	readonly site_directory api_key ignore_regex n_concurrent_tasks
-	if ! cd -- "${site_directory:?}"; then
-		echo "Couldn't cd to '$site_directory'."
+	if ! [[ -d $site_directory ]]; then
+		echo "The site directory doesn not exist."
+		exit 1
+	fi
+	if ! cd -- "$site_directory"; then
+		echo "Couldn't cd to $site_directory"
 		exit 1
 	fi
 }
