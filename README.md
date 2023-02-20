@@ -10,17 +10,42 @@ I use [neocities](https://neocities.org/) to host some sites.
 One day the official CLI client stopped working completely,
 so I wrote this one in bash.
 
-## Setup
+## Installation
 
-1) Install `bashcities`.
-   If your distribution is based on Arch Linux, you can install the AUR package.
+### Arch Linux and pacman-based distros
 
-   Example of a manual installation:
+If your distribution is based on Arch Linux,
+you can install the [AUR package](https://aur.archlinux.org/packages/bashcities)
+and skip to [Setup](#setup).
+
+### Other distros
+
+If you want to package this program for your distro and know how to do it,
+please create a pull request.
+
+<details>
+
+<summary>Manual installation</summary>
+
+1) Install dependencies.
+   The dependencies are very basic and I expect that you already have them.
+
+   * `bash`
+   * `python`
+   * `curl`
+   * `git` (recommended, but optional)
+2) Save the executable somewhere and make sure it's in your `PATH`.
+   For example, like this.
 
    ```
    $ git clone 'https://github.com/tatsumoto-ren/bashcities.git' ~/.local/share/neocities
    $ ln -s ~/.local/share/neocities/bashcities ~/.local/bin/bashcities
    ```
+
+</details>
+
+## Setup
+
 1) Grab your API Key.
    Go to the [Neocities settings](https://neocities.org/settings/),
    click "Manage Site Settings" > "API Key".
@@ -31,8 +56,16 @@ so I wrote this one in bash.
    It doesn't have to be equal to your site name.
 1) The profile file will be saved in `~/.config/neocities/`.
    Edit it and specify the directory of your site and the API key.
-   `ignore_regex` is a regular expression that defines files to be ignored.
+
+Variables in the config file:
+
+* `site_directory`. The path to the local folder that contains your site.
+* `api_key`. This key is required for authentication on Neocities.
+* `ignore_regex`. A regular expression that defines files to be ignored.
    They won't be uploaded to the remote.
+* `n_concurrent_tasks`. Uploading files one by one can take time.
+   You can choose to upload multiple files at the same time,
+   and it will make updating faster.
 
 ## Running
 
