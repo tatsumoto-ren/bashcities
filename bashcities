@@ -167,7 +167,9 @@ read_config() {
 }
 
 help() {
-	echo "Usage: $(basename -- "$(readlink -f -- "$0")") [OPTION] [FILE]"
+	local -r prog_name=$(basename -- "$(readlink -f -- "$0")")
+
+	echo "Usage: $prog_name [OPTION] [FILE]"
 	echo
 	echo "A Neocities client written in Bash."
 	echo
@@ -186,6 +188,8 @@ help() {
 		upload FILE|upload a file
 		delete FILE|delete a file from the remote
 	EOF
+	echo
+	echo "$prog_name home page: https://github.com/tatsumoto-ren/bashcities"
 }
 
 init() {
