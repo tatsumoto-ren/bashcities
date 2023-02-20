@@ -157,7 +157,7 @@ read_config() {
 	fi
 	readonly site_directory api_key ignore_regex n_concurrent_tasks
 	if ! [[ -d $site_directory ]]; then
-		echo "The site directory doesn not exist."
+		echo "The site directory doesn't exist."
 		exit 1
 	fi
 	if ! cd -- "$site_directory"; then
