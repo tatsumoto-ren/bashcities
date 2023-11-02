@@ -10,10 +10,24 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 
 readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
-declare site_directory="" api_key="" ignore_regex="" n_concurrent_tasks=16
+declare site_directory="" api_key="" ignore_regex="" n_concurrent_tasks=4
+
+assert_api_key() {
+	if [[ -z $api_key ]]; then
+		echo -e "${RED}API key is not set. Did you forget to specify --profile?${NC}" >&2
+		return 1
+	fi
+}
+
+assert_site_directory() {
+	if [[ -z $site_directory ]]; then
+		echo -e "${RED}Site directory is not set. Did you forget to specify --profile?${NC}" >&2
+		return 1
+	fi
+}
 
 request() {
-	curl -s -H "Authorization: Bearer $api_key" "$@"
+	curl -s -H "Authorization: Bearer $api_key" "$@" || true
 }
 
 list() {
@@ -37,6 +51,10 @@ for file_info in content["files"]:
     if file_info["is_directory"] is False:
         print(file_info["path"], file_info["sha1_hash"], sep="\t")
 '
+}
+
+list_remote_files() {
+	list_remote_files_and_sums | cut -f1
 }
 
 download_backup() {
@@ -103,6 +121,16 @@ list_pending_file_changes() {
 	done | sort -u
 }
 
+print_pending_file_changes() {
+	local text=""
+	if [[ -n ${text:=$(list_pending_file_changes)} ]]; then
+		echo "Pending changes on the remote:"
+		echo "$text"
+	else
+		echo "The site is up to date."
+	fi
+}
+
 upload() {
 	local -r file=$1
 	if [[ -f $file ]]; then
@@ -124,7 +152,7 @@ parse_request_result() {
 	else
 		echo -e "${RED}[FAIL]${NC} ${file:?}"
 		if [[ ${verbose-} == true ]]; then
-			echo "$msg"
+			echo "Server returned: \"$msg\""
 		fi
 	fi
 }
@@ -224,6 +252,7 @@ main() {
 		help
 		exit
 	fi
+	local -a execute_later=()
 	while (($# > 0)); do
 		case $1 in
 		-h | --help)
@@ -242,37 +271,29 @@ main() {
 			;;
 		init)
 			local -r user=${2:?Please provide a profile name.}
-			init
-			exit
+			execute_later+=(init)
 			;;
 		push)
-			with_stash update_site
-			exit
+			execute_later+=(with_stash update_site)
 			;;
 		status)
-			echo "Pending changes on the remote:"
-			with_stash list_pending_file_changes
-			exit
+			execute_later+=(with_stash print_pending_file_changes)
 			;;
 		list)
 			if [[ ${2-} == '--local' ]]; then
-				list_local_files
+				execute_later+=(list_local_files)
 			else
-				list_remote_files_and_sums | cut -f1
+				execute_later+=(list_remote_files)
 			fi
-			exit
 			;;
 		download)
-			download_backup
-			exit
+			execute_later+=(download_backup)
 			;;
 		upload)
-			upload "$2"
-			exit
+			execute_later+=(upload "$2")
 			;;
 		delete)
-			delete "$2"
-			exit
+			execute_later+=(delete "$2")
 			;;
 		"")
 			break
@@ -284,6 +305,15 @@ main() {
 		esac
 		shift
 	done
+	if [[ ${#execute_later[@]} -le 0 ]]; then
+		echo "The job to do was not provided."
+		help
+		exit 1
+	else
+		assert_site_directory
+		assert_api_key
+		"${execute_later[@]}" # call the stored args
+	fi
 }
 
 main "$@"
