@@ -273,6 +273,7 @@ main() {
 			local -r user=${2:?Please provide a profile name.}
 			execute_later+=(init)
 			shift
+			break
 			;;
 		push)
 			execute_later+=(with_stash update_site)
@@ -314,8 +315,10 @@ main() {
 		help
 		exit 1
 	else
-		assert_site_directory
-		assert_api_key
+		if [[ ${execute_later[0]} != init ]]; then
+			assert_site_directory
+			assert_api_key
+		fi
 		"${execute_later[@]}" # call the stored args
 	fi
 }
