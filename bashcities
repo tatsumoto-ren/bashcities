@@ -272,6 +272,7 @@ main() {
 		init)
 			local -r user=${2:?Please provide a profile name.}
 			execute_later+=(init)
+			shift
 			;;
 		push)
 			execute_later+=(with_stash update_site)
@@ -282,6 +283,7 @@ main() {
 		list)
 			if [[ ${2-} == '--local' ]]; then
 				execute_later+=(list_local_files)
+				shift
 			else
 				execute_later+=(list_remote_files)
 			fi
@@ -291,9 +293,11 @@ main() {
 			;;
 		upload)
 			execute_later+=(upload "$2")
+			shift
 			;;
 		delete)
 			execute_later+=(delete "$2")
+			shift
 			;;
 		"")
 			break
