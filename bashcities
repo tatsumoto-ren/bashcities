@@ -230,7 +230,7 @@ init() {
 			site_directory=~/Documents/my_site
 			api_key=da77c3530c30593663bf7b797323e48c
 			ignore_regex='\.md$|\.gitignore$|(^|/)drafts/'
-			n_concurrent_tasks=16
+			n_concurrent_tasks=4
 		EOF
 		echo "Created a new config file: '$new_config'."
 		echo "Edit it to specify the parameters of your site."
