@@ -237,11 +237,17 @@ init() {
 	fi
 }
 
+git_no_differences() {
+	git diff --quiet --exit-code
+}
+
 with_stash() {
-	if [[ ${no_git-} == true ]]; then
+	# If there's nothing to stash or git is disabled, just call the args verbatim.
+	# Otherwise, stash the current changes, then perform the requested actions.
+	if [[ ${no_git-} == true ]] || git_no_differences; then
 		"$@"
 	else
-		git stash >/dev/null
+		git stash push >/dev/null
 		"$@"
 		git stash pop >/dev/null
 	fi
