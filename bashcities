@@ -277,33 +277,33 @@ main() {
 			;;
 		init)
 			local -r user=${2:?Please provide a profile name.}
-			execute_later+=(init)
+			execute_later=(init)
 			shift
 			break
 			;;
 		push)
-			execute_later+=(with_stash update_site)
+			execute_later=(with_stash update_site)
 			;;
 		status)
-			execute_later+=(with_stash print_pending_file_changes)
+			execute_later=(with_stash print_pending_file_changes)
 			;;
 		list)
 			if [[ ${2-} == '--local' ]]; then
-				execute_later+=(list_local_files)
+				execute_later=(list_local_files)
 				shift
 			else
-				execute_later+=(list_remote_files)
+				execute_later=(list_remote_files)
 			fi
 			;;
 		download)
-			execute_later+=(download_backup)
+			execute_later=(download_backup)
 			;;
 		upload)
-			execute_later+=(upload "$2")
+			execute_later=(upload "$2")
 			shift
 			;;
 		delete)
-			execute_later+=(delete "$2")
+			execute_later=(delete "$2")
 			shift
 			;;
 		"")
