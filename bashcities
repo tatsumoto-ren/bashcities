@@ -95,6 +95,9 @@ list_pending_file_changes() {
 
 	# Remember local checksums
 	while IFS= read -r rel_path; do
+		if [[ -z $rel_path ]]; then
+			continue
+		fi
 		if [[ -n $ignore_regex ]] && [[ $rel_path =~ $ignore_regex ]]; then
 			continue
 		fi
