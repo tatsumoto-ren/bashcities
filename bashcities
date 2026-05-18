@@ -10,7 +10,7 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 
 readonly config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/neocities
-declare site_directory="" api_key="" ignore_regex="" n_concurrent_tasks=4
+declare site_directory="" api_key="" ignore_regex="" n_concurrent_tasks=4 curl_timeout=30
 
 assert_api_key() {
 	if [[ -z $api_key ]]; then
@@ -26,8 +26,13 @@ assert_site_directory() {
 	fi
 }
 
+die() {
+	echo "$*" >&2
+	exit 1
+}
+
 request() {
-	curl -s -H "Authorization: Bearer $api_key" "$@" || true
+	curl --max-time "$curl_timeout" -s -H "Authorization: Bearer $api_key" "$@" || die "curl request failed: $*"
 }
 
 list() {
@@ -186,7 +191,7 @@ read_config() {
 		echo "Can't find config file."
 		exit 1
 	fi
-	readonly site_directory api_key ignore_regex n_concurrent_tasks
+	readonly site_directory api_key ignore_regex n_concurrent_tasks curl_timeout
 	if ! [[ -d $site_directory ]]; then
 		echo "The site directory doesn't exist."
 		exit 1
@@ -234,6 +239,7 @@ init() {
 			api_key=da77c3530c30593663bf7b797323e48c
 			ignore_regex='\.md$|\.gitignore$|(^|/)drafts/'
 			n_concurrent_tasks=4
+			curl_timeout=30
 		EOF
 		echo "Created a new config file: '$new_config'."
 		echo "Edit it to specify the parameters of your site."
