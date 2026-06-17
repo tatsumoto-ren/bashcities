@@ -32,7 +32,7 @@ die() {
 }
 
 request_noauth() {
-	curl --max-time "$curl_timeout" -sL "$@" || die "curl request failed: $*"
+	curl --max-time "$curl_timeout" -sL "$@"
 }
 
 request() {
