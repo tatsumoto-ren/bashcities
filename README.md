@@ -3,6 +3,7 @@
 [![AUR](https://img.shields.io/badge/AUR-install-blue)](https://aur.archlinux.org/packages/bashcities)
 [![Chat](https://img.shields.io/badge/chat-join-green)](https://tatsumoto-ren.github.io/blog/join-our-community.html)
 ![GitHub](https://img.shields.io/github/license/tatsumoto-ren/bashcities)
+[![Support](https://img.shields.io/badge/support-developer-orange?logo=Patreon&logoColor=orange)](https://ajatt.top/blog/donating-to-tatsumoto.html)
 
 > A neocities client that actually works.
 
