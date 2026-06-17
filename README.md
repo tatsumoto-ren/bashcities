@@ -18,6 +18,14 @@ If your distribution is based on Arch Linux,
 you can install the [AUR package](https://aur.archlinux.org/packages/bashcities)
 and skip to [Setup](#setup).
 
+### Debian-based distros
+
+Ubuntu and Debian users can install the provided .deb package.
+
+```bash
+wget https://github.com/tatsumoto-ren/bashcities/releases/latest/download/bashcities.deb && sudo dpkg -i bashcities.deb
+```
+
 ### Other distros
 
 If you want to package this program for your distro and know how to do it,
@@ -66,6 +74,8 @@ Variables in the config file:
 * `n_concurrent_tasks`. Uploading files one by one can take time.
    You can choose to upload multiple files at the same time,
    and it will make updating faster.
+* `curl_timeout`. Maximum time in seconds to wait for a curl request to complete.
+   Defaults to 30.
 
 ## Running
 
