@@ -31,8 +31,12 @@ die() {
 	exit 1
 }
 
+request_noauth() {
+	curl --max-time "$curl_timeout" -sL "$@" || die "curl request failed: $*"
+}
+
 request() {
-	curl --max-time "$curl_timeout" -s -H "Authorization: Bearer $api_key" "$@" || die "curl request failed: $*"
+	request_noauth -H "Authorization: Bearer $api_key" "$@"
 }
 
 list() {
@@ -75,7 +79,7 @@ download_backup() {
 	while IFS= read -r rel_path; do
 		full_url="https://$site_name.neocities.org/$rel_path"
 		mkdir -p -- "$(dirname -- "$rel_path")"
-		if curl -s "$full_url" -o "$rel_path"; then
+		if request_noauth "$full_url" -o "$rel_path"; then
 			echo -e "${GREEN}[OK]${NC} $rel_path"
 		else
 			echo -e "${RED}[FAIL]${NC} $rel_path"
