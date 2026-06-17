@@ -18,5 +18,5 @@ Don't forget to provide:
 
 1) OS name
 2) OS version
-4) Logs
-5) Screenshots, if applicable
+3) Logs
+4) Screenshots, if applicable
